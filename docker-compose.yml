@@ -1,0 +1,173 @@
+volumes:
+  pg-data:
+    name: pg-data
+    driver: local
+services:
+  postgres:
+    container_name: anaml-postgres
+    image: postgres:13
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # These set up the database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      # These are used by psql when connecting interactively
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: 1234
+    healthcheck:
+      test: pg_isready
+      interval: 10s
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data/pgdata
+  anaml-server:
+    platform: linux/amd64
+    container_name: anaml-server
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-server:${ANAML_VERSION:-latest}
+    command: [
+      "-Dscala.concurrent.context.numThreads=10",
+      "-Dscala.concurrent.context.maxThreads=100",
+      "--databaseServerName", "anaml-postgres",
+      "--databasePassword", "1234",
+      "--databaseSchema", "anaml"
+    ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      JAVA_OPTS: '-Dweb.host=0.0.0.0 -XX:ActiveProcessorCount=4'
+      ANAML_ADMIN_NAME: '${ANAML_ADMIN_NAME:-Admin}'
+      ANAML_ADMIN_EMAIL: '${ANAML_ADMIN_EMAIL:-admin@anaml.io}'
+      ANAML_ADMIN_PASSWORD: '${ANAML_ADMIN_PASSWORD:-test password}'
+      ANAML_ADMIN_TOKEN: '${ANAML_ADMIN_APIKEY:-03d147fe-0fa8-4aef-bce6-e6fbcd1cd000}'
+      ANAML_ADMIN_SECRET: '${ANAML_ADMIN_SECRET:-test secret}'
+      ANAML_LICENSE_KEY: '${ANAML_LICENSE_KEY:-}'
+    healthcheck:
+      test: curl --fail localhost:8080
+      interval: 10s
+      start_period: 60s
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./demo-data
+        target: /data
+      - ${HOME}/.anaml/license:/anaml-license
+  anaml-ui:
+    platform: linux/amd64
+    container_name: anaml-ui
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-ui:${ANAML_VERSION:-latest}
+    environment:
+      # This is for calls from the browser so they need localhost (via the loadbalancer/nginx)
+      ANAML_API_ORIGIN_URL: http://anaml-server:8080/api
+      ANAML_AUTH_ORIGIN_URL: http://anaml-server:8080/auth
+      ANAML_BASEPATH: /
+      ANAML_DOCS_ORIGIN_URL: http://anaml-docs/docs
+      SPARK_HISTORY_SERVER_ORIGIN_URL: http://anaml-docs
+    depends_on:
+      anaml-server:
+        condition: service_healthy
+      anaml-docs:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail localhost:80
+      interval: 10s
+    ports:
+      - "8081:80"
+  anaml-docs:
+    platform: linux/amd64
+    container_name: anaml-docs
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-docs:${ANAML_VERSION:-latest}
+    healthcheck:
+      test: curl --fail localhost:80
+      interval: 10s
+  anaml-spark-server:
+    platform: linux/amd64
+    container_name: anaml-spark-server
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-spark-server:${ANAML_VERSION:-latest}
+    command: /opt/docker/bin/anaml-spark-server.sh
+    volumes:
+      - type: bind
+        source: ./demo-data
+        target: /data
+    environment:
+      JAVA_OPTS: -Dweb.host=0.0.0.0
+      SPARK_LOCAL_HOSTNAME: anaml-spark-server
+      ANAML_SERVER_URL: http://anaml-server:8080
+      ANAML_ADMIN_TOKEN: '${ANAML_ADMIN_APIKEY:-admin@anaml.io}'
+      ANAML_ADMIN_SECRET: '${ANAML_ADMIN_SECRET:-test secret}'
+      ANAML_SPARK_MASTER: spark://spark-master:7077
+      ANAML_SPARK_DEPLOY_MODE: client
+    # healthcheck:
+    #   test: curl --fail localhost:8762
+    #   start_period: 60s
+    ports:
+      - "8762:8762"
+      - "4040:4040"
+  spark-master:
+    profiles: ["spark"]
+    platform: linux/amd64
+    container_name: spark-master
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-spark-server:${ANAML_VERSION:-latest}
+    command: master
+    ports:
+      - 8070:8080
+      - 7077:7077
+    volumes:
+      - type: bind
+        source: ./demo-data
+        target: /data
+  spark-worker:
+    profiles: ["spark"]
+    platform: linux/amd64
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-spark-server:${ANAML_VERSION:-latest}
+    environment:
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 1g
+    command: worker
+    volumes:
+      - /spark-work-dir
+      - type: bind
+        source: ./demo-data
+        target: /data
+    depends_on:
+      - spark-master
+  anaml-demo-setup:
+    profiles: ["demo-setup"]
+    platform: linux/amd64
+    container_name: anaml-demo-setup
+    image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/oniomania:latest
+    command: bootstrap
+    environment:
+      VIEWDIR: /data
+      OUTPUT: ""
+      INITIAL_CUST: 10
+      BACK_DATE: 10
+      ANAML_API_URL: xx
+      ANAML_API_USERNAME: xx
+      ANAML_API_PASSWORD: xx
+      ANAML_PG_HOST: xx
+      ANAML_PG_PASSWORD: xx
+      ANAML_SPARK_SERVER_URL: xx
+    volumes:
+      - type: bind
+        source: ./demo-data/raw
+        target: /data
+  terraform:
+    profiles: ["demo-setup"]
+    container_name: terraform
+    image: hashicorp/terraform:latest
+    environment:
+      TF_VAR_anaml_api_url: http://anaml-server:8080/api
+      TF_VAR_anaml_api_apikey: '${ANAML_ADMIN_APIKEY:-03d147fe-0fa8-4aef-bce6-e6fbcd1cd000}'
+      TF_VAR_anaml_api_secret: '${ANAML_ADMIN_SECRET:-test secret}'
+    volumes:
+      - type: bind
+        source: ./demo-setup
+        target: /demo-setup
+    working_dir: /demo-setup
+    depends_on:
+      anaml-server:
+        condition: service_healthy

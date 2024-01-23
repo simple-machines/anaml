@@ -38,7 +38,19 @@ If you would like to setup some demonstration data and definitions run the follo
 ./docker-demo-setup.sh
 ```
 
-#### Cleanup
+#### Adding your own data
+
+You can add your own data into the docker container inside the `demo-data/raw` directory. Each table of data should be in it's own directory.
+
+For example to add data on orders:
+```
+mkdir -p demo-data/raw/orders
+cp <orders data file(s)> demo-data/raw/orders
+```
+
+In Anaml create a new _Table_, choose `local_csv` or `local_orc` as the _Source_ and set the path as `orders`. You should now be able to preview the table.
+
+#### Clean-up
 
 If you would like to reset the environment and database:
 

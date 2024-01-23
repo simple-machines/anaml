@@ -117,13 +117,23 @@ resource "anaml-operations_cluster" "spark_docker_job" {
   }
 }
 
-resource "anaml-operations_source" "local" {
-  name        = "local"
+resource "anaml-operations_source" "local_orc" {
+  name        = "local_orc"
   description = "Local data for testing"
 
   local {
     path        = "/data/raw"
     file_format = "orc"
+  }
+}
+
+resource "anaml-operations_source" "local_csv" {
+  name        = "local_csv"
+  description = "Local data for testing"
+
+  local {
+    path        = "/data/raw"
+    file_format = "csv"
   }
 }
 
@@ -142,6 +152,6 @@ module "anaml_demo_features" {
   cluster_id              = anaml-operations_cluster.local.id
   destination_id          = anaml-operations_destination.local.id
   source_id               = anaml-operations_source.local.id
-  source_type             = "local"
+  source_type             = "local_orc"
   destination_type        = "local"
 }

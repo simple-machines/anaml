@@ -1,6 +1,6 @@
 volumes:
-  pg-data:
-    name: pg-data
+  anaml-pg-data:
+    name: anaml-pg-data
     driver: local
 services:
   postgres:
@@ -21,7 +21,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg-data:/var/lib/postgresql/data/pgdata
+      - anaml-pg-data:/var/lib/postgresql/data/pgdata
   anaml-server:
     platform: linux/amd64
     container_name: anaml-server
@@ -109,7 +109,7 @@ services:
   spark-master:
     profiles: ["spark"]
     platform: linux/amd64
-    container_name: spark-master
+    container_name: anaml-spark-master
     image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-spark-server:${ANAML_VERSION:-latest}
     command: master
     ports:
@@ -122,6 +122,7 @@ services:
   spark-worker:
     profiles: ["spark"]
     platform: linux/amd64
+    container_name: anaml-spark-worker
     image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-spark-server:${ANAML_VERSION:-latest}
     environment:
       SPARK_WORKER_CORES: 1
@@ -157,7 +158,7 @@ services:
         target: /data
   terraform:
     profiles: ["demo-setup"]
-    container_name: terraform
+    container_name: anaml-terraform
     image: hashicorp/terraform:latest
     environment:
       TF_VAR_anaml_api_url: http://anaml-server:8080/api
@@ -171,3 +172,4 @@ services:
     depends_on:
       anaml-server:
         condition: service_healthy
+

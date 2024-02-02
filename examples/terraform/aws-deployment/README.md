@@ -1,7 +1,7 @@
 # AWS example Terraform deployment
 
 > [!CAUTION]
-> The basic example here does not configure TLS support for example brevity and should be used for testing purposes only.
+> The basic example here does not configure TLS support for brevity and should be used for testing purposes only.
 > For further information please see [TLS Notes](#tls-notes)
 
 This Terraform example shows a minimal Anaml deployment in AWS. It will deploy Anaml to an EKS cluster and make the application available through a public [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) using the EKS [aws-load-balancer-conrtoller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.6/).
@@ -16,7 +16,6 @@ This Terraform will create the below billable resource in AWS
  - [RDS](https://aws.amazon.com/rds/) PostgreSQL database
  - [EKS](https://aws.amazon.com/eks/) Kubernetes cluster
  - [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) Application Load Balancer
- - [S3](https://aws.amazon.com/s3/) bucket
 
 
 ## File description
@@ -24,10 +23,6 @@ This Terraform will create the below billable resource in AWS
   - [aws_eks.tf](./aws_eks.tf). This file contains Terraform code to create a EKS cluster. If you are deploying to an exiting EKS cluster you can remove this file.
   - [aws_rds](./aws_rds.tf). This file contains Terraform code to create a RDS PostgreSQL instance. If you are deploying to an existing PostgreSQL server, you can remove this file.
   - [aws_vpc.tf](./aws_vpc.tf). This file contains Terraform code for create a VPC needed for EKS. If you are deploying to an existing VPC on to an existing EKS cluster you can remove this file.
-  - [aws_s3.tf](./aws_s3.tf). This file contains Terraform code to create a bucket for Anaml checkpoint data.
-
-## Checkpoint bucket
-Anaml requires a s3 bucket to store internal anaml checkpoint metadata. You must provide a unique bucket name when asked by Terraform
 
 ## Deploying Terraform
 [TODO]

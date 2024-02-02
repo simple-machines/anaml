@@ -25,7 +25,33 @@ This Terraform will create the below billable resource in AWS
   - [aws_vpc.tf](./aws_vpc.tf). This file contains Terraform code for create a VPC needed for EKS. If you are deploying to an existing VPC on to an existing EKS cluster you can remove this file.
 
 ## Deploying Terraform
-[TODO]
+Run the below command.
+
+It will prompt you to:
+  - Enter the initial admin email. This is used to log in to Anaml.
+  - Enter the initial admin password. This is used to log in to Anaml.
+  - Enter the availability zones for the VPC subnets. You should enter at least two availability zones, i.e. `["ap-southeast-2a", "ap-southeast-2b"]`
+
+```
+❯ terraform apply
+```
+
+```
+var.initial_admin_email
+  The initial default admin email
+
+  Enter a value: admin@anaml.io
+
+var.initial_admin_password
+  The initial default admin password
+
+  Enter a value: test password
+
+var.zones
+  AWS zones for multi-zone resources. They must exist within the configured region.
+
+  Enter a value: ["ap-southeast-2a", "ap-southeast-2b"]
+```
 
 ## Post deploy setup
 - [TODO] Notes on configuring source / destinations. Links to docs?

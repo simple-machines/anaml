@@ -1,8 +1,12 @@
-##
-## Backend configuration
-##
-## These variables correspond to the S3 Backend parameters with the same name.
-##
+variable "initial_admin_email" {
+  type = string
+  description = "The initial default admin email"
+}
+
+variable "initial_admin_password" {
+  type = string
+  description = "The initial default admin password"
+}
 
 variable "name_prefix" {
   type        = string
@@ -13,7 +17,6 @@ variable "name_prefix" {
 variable "zones" {
   type        = list(string)
   description = "AWS zones for multi-zone resources. They must exist within the configured region."
-  default     = ["ap-southeast-2a", "ap-southeast-2b"] # TODO delete
 }
 
 variable "kubernetes_version" {

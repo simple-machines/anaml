@@ -1,7 +1,8 @@
 module "anaml_all" {
   source = "github.com/simple-machines/anaml-terraform-registry//modules/app-all?ref=0eea3600887822b66fed13c0cff7a8f3913185f7"
 
-  anaml_admin_password = "test password"
+  anaml_admin_email    = var.initial_admin_email
+  anaml_admin_password = var.initial_admin_password
   anaml_version        = "v1.15.0"
 
   container_registry = "australia-southeast1-docker.pkg.dev/anaml-public-artifacts/docker"

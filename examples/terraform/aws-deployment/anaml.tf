@@ -1,5 +1,5 @@
 module "anaml_all" {
-  source = "/Users/adam.evans/Code/simple-machines/anaml-terraform-registry//modules/app-all?ref=365df91a3e197a3fe3f16574665231c19c1beaf0"
+  source = "github.com/simple-machines/anaml-terraform-registry//modules/app-all?ref=0eea3600887822b66fed13c0cff7a8f3913185f7"
 
   anaml_admin_password = "test password"
   anaml_version        = "v1.15.0"
@@ -30,9 +30,6 @@ module "anaml_all" {
   # We need to disable the hsts header and secure cookie flag
   override_anaml_server_enable_secure_cookies = false
   override_anaml_server_enable_hsts           = false
-
-  # TODO need to set up a bucket
-  override_anaml_spark_server_checkpoint_location = "s3://anaml-aevans-test/checkpoint"
 
   override_anaml_spark_server_kubernetes_service_account_spark_driver_executor_create = true
   override_anaml_spark_server_kubernetes_service_account_spark_driver_executor        = "anaml-spark-executor"

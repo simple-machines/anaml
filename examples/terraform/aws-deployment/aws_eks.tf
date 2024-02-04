@@ -1,44 +1,3 @@
-# Render Admin & Developer users list with the structure required by EKS module
-locals {
-  node_groups = {
-    anaml = {
-      capacity_type    = "ON_DEMAND"
-      instance_types   = var.anaml_instance_types
-      desired_capacity = var.anaml_asg_minimum_size_by_az * length(var.zones)
-      min_capacity     = var.anaml_asg_minimum_size_by_az * length(var.zones)
-      max_capacity     = var.anaml_asg_maximum_size_by_az * length(var.zones)
-      public_ip        = true
-      k8s_labels = {
-        node_pool = "anaml-node-pool"
-      }
-      additional_tags = {
-        "k8s.io/cluster-autoscaler/node-template/label/node_pool" = "anaml-node-pool"
-      }
-    }
-    spark = {
-      capacity_type    = "SPOT"
-      instance_types   = var.spark_instance_types
-      desired_capacity = var.spark_asg_minimum_size_by_az * length(var.zones)
-      min_capacity     = var.spark_asg_minimum_size_by_az * length(var.zones)
-      max_capacity     = var.spark_asg_maximum_size_by_az * length(var.zones)
-      public_ip        = true
-      k8s_labels = {
-        node_pool = "anaml-spark-pool"
-      }
-      additional_tags = {
-        "k8s.io/cluster-autoscaler/node-template/label/node_pool" = "anaml-spark-pool"
-      }
-      taints = [
-        {
-          key    = "anaml-spark-pool"
-          value  = "true"
-          effect = "NO_SCHEDULE"
-        }
-      ]
-    }
-  }
-}
-
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_name
   depends_on = [
@@ -103,7 +62,7 @@ module "eks" {
       }
       taints = [
         {
-          key    = "anaml-spark-pool"
+          key    = "spark-only"
           value  = "true"
           effect = "NO_SCHEDULE"
         }

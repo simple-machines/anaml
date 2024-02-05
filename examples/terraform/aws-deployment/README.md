@@ -57,17 +57,28 @@ var.zones
 ### Spark cluster set up
 Anaml requires an Apache [Spark](https://spark.apache.org/) cluster to run jobs and previews.
 
+#### Step one: Sign in to Anaml
 Once Anaml is deployed you need to sign in to the Anaml Web UI.
 
-In the AWS console, go to the Load balancers page, select the k8s-anaml load balancer and then copy the "DNS name" for subsequent steps.
+In the AWS console, go to the Load balancers page
+![AWS Loadbalancers page](/docs/images/aws_loadbalancer_list_page.png)
+
+Select the `k8s-anaml` load balancer and then copy the "DNS name" for subsequent steps.
+![AWS Anaml loadbalancer page](/docs/images/aws_anaml_loadbalencer_page.png)
 
 Open a web browser, paste the DNS name in to the address bar and press enter.
-
+![Anaml Sign In Page](/docs/images/aws_anaml_sign_in_page.png)
 You should now see a log in page. Enter the admin email and password used in the Terraform set up and click Logiin.
 
-Click the "Configuration" link on the top menu bar, then click "Clusters" on the left.
+#### Step two: Create a cluster
+Click the "Configuration" link on the top menu bar.
+![Anaml configuration link](/docs/images/anaml_top_menu_bar_configuration_link.png)
+
+Click "Clusters" on the left menu in the configuration page.
+![Anaml clusters link](/docs/images/anaml_configuration_page_left_menu_clusters_link.png)
 
 On the clusters page, click "Create Cluster"
+![Anaml create cluster link](/docs/images/anaml_create_your_first_cluster_link.png)
 
 For name enter: "spark_on_k8s"
 
@@ -93,10 +104,17 @@ Under "Anaml Spark Server URL" enter `http://anaml-spark-server:8762`
 
 Click "Create Cluster" at the top of the page.
 
+#### Step three: Test cluster works
 To test the cluster connection, click "Workbooks" on the top menu bar, enter the below query and click "Run". Once the query has run you should see a table with the result.
 ```
 select 1
 ```
+
+![Anaml cluster test 01](/docs/images/anaml_workbook_cluster_test_1.png)
+
+
+![Anaml cluster test -2](/docs/images/anaml_workbook_cluster_test_2.png)
+
 
 - [TODO] Notes on configuring source / destinations. Links to docs?
 - [TODO] links to a tutorial / walkthrough?

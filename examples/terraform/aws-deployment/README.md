@@ -55,7 +55,7 @@ var.zones
 
 ## Post deploy setup
 ### Spark cluster set up
-Anaml requires an Apache [Spark](https://spark.apache.org/) cluster to run jobs and previews.
+Anaml requires an Apache [Spark](https://spark.apache.org/) cluster to run jobs and previews. Follow the below steps to use an Anaml managed Spark cluster on Kubernetes.
 
 #### Step one: Sign in to Anaml
 Once Anaml is deployed you need to sign in to the Anaml Web UI.
@@ -75,6 +75,7 @@ Click the "Configuration" link on the top menu bar.
 ![Anaml configuration link](/docs/images/anaml_top_menu_bar_configuration_link.png)
 
 Click "Clusters" on the left menu in the configuration page.
+
 ![Anaml clusters link](/docs/images/anaml_configuration_page_left_menu_clusters_link.png)
 
 On the clusters page, click "Create Cluster"
@@ -113,6 +114,7 @@ select 1
 ![Anaml cluster test 01](/docs/images/anaml_workbook_cluster_test_1.png)
 
 
+Results:
 ![Anaml cluster test -2](/docs/images/anaml_workbook_cluster_test_2.png)
 
 

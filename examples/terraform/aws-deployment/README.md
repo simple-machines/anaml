@@ -54,6 +54,50 @@ var.zones
 ```
 
 ## Post deploy setup
+### Spark cluster set up
+Anaml requires an Apache [Spark](https://spark.apache.org/) cluster to run jobs and previews.
+
+Once Anaml is deployed you need to sign in to the Anaml Web UI.
+
+In the AWS console, go to the Load balancers page, select the k8s-anaml load balancer and then copy the "DNS name" for subsequent steps.
+
+Open a web browser, paste the DNS name in to the address bar and press enter.
+
+You should now see a log in page. Enter the admin email and password used in the Terraform set up and click Logiin.
+
+Click the "Configuration" link on the top menu bar, then click "Clusters" on the left.
+
+On the clusters page, click "Create Cluster"
+
+For name enter: "spark_on_k8s"
+
+For description enter: "A Spark server cluster running on Kubernetes"
+
+Click the "Enable Previews" button
+
+Under "Spark Properties" and click "Add", enter the below values
+
+| Property Key                                | Value              |
+|---------------------------------------------|--------------------|
+| spark.driver.host                           | anaml-spark-server |
+| spark.sql.adaptive.enable                   | false              |
+| spark.driver.port                           | 7078               |
+| spark.driver.blockManager.port              | 7079               |
+| spark.driver.bindAddress                    | 0.0.0.0            |
+| spark.dynamicAllocation.maxExecutors        | 16                 |
+| spark.dynamicAllocation.executorIdleTimeout | 1800s              |
+
+Under "Cluster Type", select "Anaml Spark Server"
+
+Under "Anaml Spark Server URL" enter `http://anaml-spark-server:8762`
+
+Click "Create Cluster" at the top of the page.
+
+To test the cluster connection, click "Workbooks" on the top menu bar, enter the below query and click "Run". Once the query has run you should see a table with the result.
+```
+select 1
+```
+
 - [TODO] Notes on configuring source / destinations. Links to docs?
 - [TODO] links to a tutorial / walkthrough?
 

@@ -219,6 +219,22 @@ Enter the below values:
 
 Click "Create Source" on the top right of the page.
 
+Upload a csv file to the S3 bucket under `/source/csv` folder/path-prefix.
+
+On the top menu bar, click the blue "Create" button. Click "Table" in the drop down.
+
+Enter a name for the table, i.e. my_test_table
+
+Make sure "Table Type" is set to "External Table"
+
+From the "Source" drop down, select the source we just created, i.e "csv_files"
+
+In the source folder text box, enter the CSV file name, i.e. `Product_v5.csv`
+
+Click the "Generate Preview" button in the right preview pane. This may take a while the first time it is run while a new Spark process is started in Kubernetes. Once complete you should see the output of the CSV file.
+
+Click "Create Table" on the top right.
+
 ## TLS Notes
 For quick-start brevity, this example does not configure Anaml to use TLS. TLS requires you to own a domain name and the exact setup depends on your DNS and certificate authority which vary greatly between users.
 

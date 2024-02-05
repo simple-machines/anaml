@@ -45,5 +45,60 @@ module "anaml_all" {
 
   # Create a Kubernetes service account for anaml
   kubernetes_service_account_create = true
-  kubernetes_service_account_name   = "anaml"
+
+  kubernetes_service_account_annotations = {
+    "eks.amazonaws.com/role-arn" = aws_iam_role.anaml-eks-service-account.arn
+  }
+
+  override_anaml_spark_server_kubernetes_service_account_spark_driver_executor_annotations = {
+    "eks.amazonaws.com/role-arn" = aws_iam_role.anaml-eks-spark-service-account.arn
+  }
+
+}
+
+# Allow anaml to use IAM for EKS
+# This is useful for attaching S3 bucket access policies to the role
+# so Anaml can read/write data
+resource "aws_iam_role" "anaml-eks-spark-service-account" {
+  name               = "anaml-eks-spark-service-account"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement: [
+        {
+            Effect: "Allow",
+            Principal: {
+                "Federated": module.eks.oidc_provider_arn
+            },
+            Action: "sts:AssumeRoleWithWebIdentity",
+            Condition: {
+                StringEquals: {
+                  "${module.eks.oidc_provider}:sub": "system:serviceaccount:anaml:anaml-spark-executor"
+                }
+            }
+        }
+    ]
+  })
+}
+
+resource "aws_iam_role" "anaml-eks-service-account" {
+  name               = "anaml-eks-service-account"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement: [
+        {
+            Effect: "Allow",
+            Principal: {
+                "Federated": module.eks.oidc_provider_arn
+            },
+            Action: "sts:AssumeRoleWithWebIdentity",
+            Condition: {
+                StringEquals: {
+                  "${module.eks.oidc_provider}:sub": "system:serviceaccount:anaml:anaml"
+                }
+            }
+        }
+    ]
+  })
 }

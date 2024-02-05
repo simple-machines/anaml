@@ -89,15 +89,16 @@ Click the "Enable Previews" button
 
 Under "Spark Properties" and click "Add", enter the below values
 
-| Property Key                                | Value              |
-|---------------------------------------------|--------------------|
-| spark.driver.host                           | anaml-spark-server |
-| spark.sql.adaptive.enable                   | false              |
-| spark.driver.port                           | 7078               |
-| spark.driver.blockManager.port              | 7079               |
-| spark.driver.bindAddress                    | 0.0.0.0            |
-| spark.dynamicAllocation.maxExecutors        | 16                 |
-| spark.dynamicAllocation.executorIdleTimeout | 1800s              |
+| Property Key                                 | Value                                                  | Notes                             |
+|----------------------------------------------|--------------------------------------------------------|-----------------------------------|
+| spark.driver.host                            | anaml-spark-server                                     |                                   |
+| spark.sql.adaptive.enable                    | false                                                  |                                   |
+| spark.driver.port                            | 7078                                                   |                                   |
+| spark.driver.blockManager.port               | 7079                                                   |                                   |
+| spark.driver.bindAddress                     | 0.0.0.0                                                |                                   |
+| spark.dynamicAllocation.maxExecutors         | 16                                                     |                                   |
+| spark.dynamicAllocation.executorIdleTimeout  | 1800s                                                  |                                   |
+| spark.hadoop.fs.s3a.aws.credentials.provider | com.amazonaws.auth.WebIdentityTokenCredentialsProvider | Enables IAM support for S3 access |
 
 Under "Cluster Type", select "Anaml Spark Server"
 
@@ -118,8 +119,87 @@ Results:
 ![Anaml cluster test -2](/docs/images/anaml_workbook_cluster_test_2.png)
 
 
-- [TODO] Notes on configuring source / destinations. Links to docs?
-- [TODO] links to a tutorial / walkthrough?
+
+
+### Set up a S3 data bucket
+Anaml reads data from [Sources](https://www.anaml.io/docs/user-guide/sources) and writes output data to [Destinations](https://www.anaml.io/docs/user-guide/destinations).
+
+To get started using Anaml, we'll set up a test S3 data bucket for our source data and output data.
+
+#### Step one: Create S3 Terraform file
+Add the below terraform file and run using terraform apply. You will need to choose a **unique name for the bucket value** as specified in the AWS [Bucket naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) documentation.
+
+The below Terraform code will create a private S3 bucket and create an IAM policy granting Anaml access.
+
+Anaml will have full read access to the bucket and write access restricted to the `out_dir` folder.
+
+`anaml_s3_data_bucket.tf`
+```
+resource "aws_s3_bucket" "anaml_data" {
+  bucket = "my-anaml-data-bucket"
+}
+
+resource "aws_s3_bucket_ownership_controls" "anaml_data" {
+  bucket = aws_s3_bucket.anaml_data.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "anaml_data_bucket" {
+  depends_on = [aws_s3_bucket_ownership_controls.anaml_data]
+
+  bucket = aws_s3_bucket.anaml_data.id
+  acl    = "private"
+}
+
+resource "aws_iam_policy" "anaml_read_source_bucket" {
+  name        = "anaml_read_source_bucket"
+  description = "Read data in Anaml source bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement: [
+        {
+            Action: [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            Effect: "Allow",
+            Resource: [
+                "arn:aws:s3:::${aws_s3_bucket.anaml_data.bucket}",
+                "arn:aws:s3:::${aws_s3_bucket.anaml_data.bucket}/*"
+            ]
+        },
+        {
+            Action: [
+                "s3:PutObject",
+            ],
+            Effect: "Allow",
+            Resource: [
+                "arn:aws:s3:::${aws_s3_bucket.anaml_data.bucket}/out_dir/*"
+            ]
+        }
+    ]
+  })
+}
+
+
+resource "aws_iam_policy_attachment" "anaml-read-source-s3-bucket-attachment" {
+  name       = "anaml-read-source-s3-bucket-attachment"
+  roles      = [
+    aws_iam_role.anaml-eks-service-account.name,
+    aws_iam_role.anaml-eks-spark-service-account.name
+  ]
+  policy_arn = aws_iam_policy.anaml_read_source_bucket.arn
+}
+```
+
+#### Step two: Deploy terraform
+Run `terraform apply` to deploy the S3 bucket and policy
+
+#### Step three: Create a test source and table to verify access
+TODO
 
 ## TLS Notes
 For quick-start brevity, this example does not configure Anaml to use TLS. TLS requires you to own a domain name and the exact setup depends on your DNS and certificate authority which vary greatly between users.

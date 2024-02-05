@@ -31,6 +31,9 @@ module "eks" {
     vpc-cni = {
       most_recent = true
     }
+    eks-pod-identity-agent = {
+      most_recent = true
+    }
   }
 
   eks_managed_node_groups = {
@@ -75,6 +78,18 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
 }
+
+# data "aws_iam_openid_connect_provider" "anaml_eks_cluster" {
+#   url = module.eks.cluster_oidc_issuer_url
+# }
+
+# resource "aws_iam_openid_connect_provider" "anaml_eks_cluster" {
+#   client_id_list  = ["sts.amazonaws.com"]
+#   thumbprint_list = data.aws_iam_openid_connect_provider.anaml_eks_cluster.thumbprint_list
+#   url             = module.eks.cluster_oidc_issuer_url
+# }
+
+
 
 resource "aws_iam_policy" "aws_load_balancer_controller_iam_policy" {
   name = "AnamlAWSLoadBalancerControllerIAMPolicy"

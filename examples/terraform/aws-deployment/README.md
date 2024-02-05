@@ -199,7 +199,25 @@ resource "aws_iam_policy_attachment" "anaml-read-source-s3-bucket-attachment" {
 Run `terraform apply` to deploy the S3 bucket and policy
 
 #### Step three: Create a test source and table to verify access
-TODO
+To test Anaml can read from the S3 bucket, create a new source and table in Anaml.
+
+On the top menu bar click configuration.
+
+On the configuration page, click "Sources" on the left menu bar, then click "Create Source" on the top right of the screen.
+
+Enter the below values:
+
+| Field         | Value                               |
+|---------------|-------------------------------------|
+| Name          | csv_files                           |
+| Description   | My test csv files                   |
+| Source Type   | Amazon S3A                          |
+| S3A Bucket    | *Enter the bucket name you created* |
+| S3A Base Path | /source/csv                         |
+| File Type     | CSV                                 |
+| CSV Headers   | Enabled                             |
+
+Click "Create Source" on the top right of the page.
 
 ## TLS Notes
 For quick-start brevity, this example does not configure Anaml to use TLS. TLS requires you to own a domain name and the exact setup depends on your DNS and certificate authority which vary greatly between users.

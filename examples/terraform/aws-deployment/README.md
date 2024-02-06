@@ -71,15 +71,13 @@ Open a web browser, paste the DNS name in to the address bar and press enter.
 You should now see a log in page. Enter the admin email and password used in the Terraform set up and click Logiin.
 
 #### Step two: Create a cluster
-Click the "Configuration" link on the top menu bar.
-![Anaml configuration link](/docs/images/anaml_top_menu_bar_configuration_link.png)
+ - Click the "Configuration" link on the top menu bar.
+ - Click "Clusters" on the left menu in the configuration page.
+ - On the clusters page, click "Create Cluster"
 
-Click "Clusters" on the left menu in the configuration page.
+![](https://www.anaml.io/assets/docs-create-cluster-menu.mov)
 
-![Anaml clusters link](/docs/images/anaml_configuration_page_left_menu_clusters_link.png)
 
-On the clusters page, click "Create Cluster"
-![Anaml create cluster link](/docs/images/anaml_create_your_first_cluster_link.png)
 
 For name enter: "spark_on_k8s"
 

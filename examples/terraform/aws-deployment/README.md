@@ -75,7 +75,7 @@ You should now see a log in page. Enter the admin email and password used in the
  - Click "Clusters" on the left menu in the configuration page.
  - On the clusters page, click "Create Cluster"
 
-![](https://www.anaml.io/assets/docs-create-cluster-menu.mov)
+<video src='https://www.anaml.io/assets/docs-create-cluster-menu.mov' width=180/>
 
 
 

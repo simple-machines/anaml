@@ -151,7 +151,7 @@ module "anaml_demo_features" {
   source = "./modules/anaml_demo"
   cluster_id              = anaml-operations_cluster.local.id
   destination_id          = anaml-operations_destination.local.id
-  source_id               = anaml-operations_source.local.id
-  source_type             = "local_orc"
+  source_id               = anaml-operations_source.local_orc.id
+  source_type             = "local"
   destination_type        = "local"
 }

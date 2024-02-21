@@ -81,7 +81,7 @@ services:
     container_name: anaml-docs
     image: ${ANAML_DOCKER_REPO:-australia-southeast1-docker.pkg.dev/anaml-release-artifacts/docker}/anaml-docs:${ANAML_VERSION:-latest}
     healthcheck:
-      test: curl --fail localhost:80
+      test: wget --spider http://localhost
       interval: 10s
   anaml-spark-server:
     platform: linux/amd64

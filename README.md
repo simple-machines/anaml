@@ -35,7 +35,7 @@ The default username/password is `admin@anaml.io` / `test password`. These can b
 If you would like to setup some demonstration data and definitions run the following command:
 
 ```bash
-./docker-demo-setup.sh
+./docker-demo-data-setup.sh
 ```
 
 #### Adding your own data

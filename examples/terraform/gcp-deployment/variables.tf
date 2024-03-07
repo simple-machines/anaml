@@ -1,8 +1,3 @@
-variable "hostname" {
-  type        = string
-  description = "The hostname used to access Anaml"
-}
-
 variable "initial_admin_email" {
   type        = string
   description = "The initial default admin email"

@@ -10,8 +10,6 @@ module "anaml_all" {
   # Form Login
   enable_form_client = true
 
-  hostname = var.hostname
-
   # Configure Kubernetes ingress to use AWS ALB so we can access anaml-ui from a browser
   kubernetes_ingress_enable      = true
   kubernetes_ingress_annotations = {}

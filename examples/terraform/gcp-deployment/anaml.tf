@@ -5,12 +5,14 @@ module "anaml_all" {
   anaml_admin_password = var.initial_admin_password
   anaml_version        = "v1.15.0"
 
+
+  override_anaml_server_version        = "v1.15.1-77-gbc03e943a"
+  override_anaml_spark_server_version  = "v1.15.1-77-gbc03e943a"
+
   container_registry = "australia-southeast1-docker.pkg.dev/anaml-public-artifacts/docker"
 
   # Form Login
   enable_form_client = true
-
-  hostname = var.hostname
 
   # Configure Kubernetes ingress to use AWS ALB so we can access anaml-ui from a browser
   kubernetes_ingress_enable      = true

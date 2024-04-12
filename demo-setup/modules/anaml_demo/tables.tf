@@ -208,7 +208,7 @@ resource "anaml_table" "transactions_enriched" {
       sku_enriched.parent,
       sku_enriched.parent_description,
       brands.name,
-      brands.`socio-economic` as socio_economic
+      brands.socio_economic
     FROM
       transactions
     JOIN
